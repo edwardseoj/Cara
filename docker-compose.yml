@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: cara
+      POSTGRES_PASSWORD: cara
+      POSTGRES_DB: cara
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # shortcut: init scripts run only on an empty volume, add a migration runner with the 2nd migration
+      - ./training/migrations:/docker-entrypoint-initdb.d:ro
+
+volumes:
+  pgdata:
