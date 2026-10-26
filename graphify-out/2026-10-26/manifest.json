@@ -1,0 +1,32 @@
+{
+  "skills-lock.json": {
+    "mtime": 1793001008.9323661,
+    "seen": 1793001118.7848432,
+    "ast_hash": "77915dac1203a5928687492b650f5996",
+    "semantic_hash": ""
+  },
+  ".agents/skills/ponytail/SKILL.md": {
+    "mtime": 1793001008.9268124,
+    "seen": 1793001118.7848494,
+    "ast_hash": "546be8ebd490e5b8d3b291c33442641a",
+    "semantic_hash": ""
+  },
+  "Brainstorming 1.md": {
+    "mtime": 1793000888.8158214,
+    "seen": 1793001118.7848523,
+    "ast_hash": "4ba118d490600c13e6cac924c24a4c4a",
+    "semantic_hash": ""
+  },
+  "GLOSSARY.md": {
+    "mtime": 1793001660.8418288,
+    "seen": 1793001673.127188,
+    "ast_hash": "69c01319b8d542a644519433078edd02",
+    "semantic_hash": ""
+  },
+  "docs/adr/0001-bring-your-own-spotify-client-id.md": {
+    "mtime": 1793001660.8878636,
+    "seen": 1793001673.1271904,
+    "ast_hash": "376f9355dd959afe22267ce5f57f5494",
+    "semantic_hash": ""
+  }
+}
