@@ -1,0 +1,3 @@
+# The Dev UI talks to a local training service, not to Postgres
+
+The Dev UI is a dev-only screen that reaches the dataset and training only through a small HTTP service in `training/` on localhost. That service owns Postgres and starts the Docker GPU training job. The shipped `app/` therefore never bundles a Postgres driver or knows how training runs, and Electron never spawns Docker. We rejected a Postgres client inside the app (it would leak dev-only dependencies into the shipped build) and a separate Electron package (it would duplicate the landmark pipeline that ADR 0002 depends on sharing).

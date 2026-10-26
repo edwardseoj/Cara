@@ -43,5 +43,9 @@ _Avoid_: Binding, shortcut
 ### Data
 
 **Recording session**:
-One sitting of collecting labeled hand landmarks, tagged with who recorded it and under what conditions.
+One sitting of collecting labeled hand landmarks, live at the webcam or from an imported video, tagged with who recorded it and under what conditions.
 _Avoid_: Capture, take, run
+
+**Sample**:
+One labeled span of consecutive frames within a recording session. A static gesture sample may be a single frame; a motion or two-hand gesture sample spans a short window.
+_Avoid_: Take, clip, example

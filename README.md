@@ -116,6 +116,7 @@ Start playing something on Spotify, sit in front of your webcam, and try an open
 - **The only network traffic is to Spotify**, for logging in and sending actions.
 - **No telemetry and no crash reporting.** If that ever changes, it will be opt-in and documented here.
 - Your Spotify token and settings are stored locally.
+- **Training videos are deleted after import (planned).** When someone contributes hand videos for training, only the extracted landmarks are kept, under a pseudonymous ID. The videos themselves are never stored or committed.
 
 ## How it works
 
@@ -171,6 +172,8 @@ cara/
 ```
 
 ## Roadmap
+
+Detailed progress lives in the [Roadmap issue](https://github.com/edwardseoj/Cara/issues/2); a box below is ticked when its milestone closes.
 
 - [ ] **0. Setup**: repo, Docker training stack + Postgres, Python script showing the camera feed with landmarks
 - [ ] **0.5. Spotify spike**: register an app, OAuth PKCE login, play/pause from a script
