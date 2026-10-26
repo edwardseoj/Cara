@@ -12,5 +12,18 @@ services:
       # shortcut: init scripts run only on an empty volume, add a migration runner with the 2nd migration
       - ./training/migrations:/docker-entrypoint-initdb.d:ro
 
+  # GPU training container; start with `docker compose run --rm train`
+  train:
+    profiles: [train]
+    build: ./training
+    command: python -m cara_training.check_gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
 volumes:
   pgdata:
