@@ -82,7 +82,7 @@ When you aren't making a gesture, Cara sees **idle** and does nothing. A gesture
 
 - An NVIDIA GPU
 - [Docker](https://docs.docker.com/engine/install/) and the [NVIDIA Container Toolkit](https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html)
-- Python 3, for the data collection scripts
+- Python 3, for the landmark viewer and training scripts
 
 ## Getting started
 
@@ -148,7 +148,7 @@ Cara has two halves that never ship together:
 
 | Concern | Choice |
 |---|---|
-| Data collection | Python + MediaPipe + OpenCV |
+| Data collection | The app's Dev UI, using the same JS MediaPipe tracker as inference ([ADR 0002](docs/adr/0002-record-landmarks-in-the-app-pipeline.md)); Python + MediaPipe + OpenCV is only a camera/landmark viewer |
 | Training | TensorFlow on GPU |
 | Dataset | PostgreSQL holding landmarks and metadata (label, recording session, hand, conditions) |
 | Environment | Docker for the GPU training container and Postgres (not used for deployment) |
@@ -203,7 +203,7 @@ Design material lives in [`docs/`](docs/) and grows alongside the code:
 - [`GLOSSARY.md`](GLOSSARY.md): the project's vocabulary (gesture, action, mapping, idle, …)
 - [`docs/adr/`](docs/adr/): architecture decision records
 - `spec/`: landmark normalization spec and test vectors (Milestone 1)
-- `docs/training.md`: data collection and training workflow (Milestone 0–2)
+- [`docs/training.md`](docs/training.md): training stack, viewer, data collection and training workflow
 
 ## Model and data
 
