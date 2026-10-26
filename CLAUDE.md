@@ -6,7 +6,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Electron app that maps webcam hand gestures to Spotify actions. `README.md` holds the stack, roadmap, and reliability targets.
 
-**Status**: pre-alpha, Milestone 0. No code exists yet: `app/`, `training/`, and `spec/` are planned, not present, so there are no build or test commands. Check the README roadmap before assuming a component exists, and add commands here as they land.
+**Status**: pre-alpha, Milestone 0. `app/`, `training/` and `spec/` are scaffolded (placeholder tests, dataset schema); the rest of the README roadmap is planned. Check it before assuming a component exists.
+
+## Commands
+
+- App (`app/`): `npm install`, `npm start`, `npm test` (Node built-in runner)
+- Training (`training/`): `python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"`, `.venv/bin/pytest` (DB tests need Postgres up)
+- Postgres: `docker compose up -d` (host port 5433, schema from `training/migrations/` on first init; `docker compose down -v` to reset)
 
 - **Vocabulary**: use the terms in `GLOSSARY.md` (gesture, action, mapping, idle, recording session, like/unlike) in code, docs, and commits.
 - **Decisions**: before changing architecture, Spotify auth, or the training/app split, read `docs/adr/`. Record new hard-to-reverse decisions there as the next numbered ADR.

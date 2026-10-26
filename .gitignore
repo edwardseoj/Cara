@@ -1,1 +1,15 @@
 graphify-out/
+node_modules/
+__pycache__/
+.venv/
+.pytest_cache/
+*.egg-info/
+
+# private dataset, recordings, models, imported-video staging (CLAUDE.md: never in git)
+training/data/
+training/recordings/
+training/models/
+training/staging/
+*.dump
+*.sql.gz
+.env
