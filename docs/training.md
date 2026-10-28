@@ -42,4 +42,4 @@ _Placeholder._ Recording sessions run from the app's Dev UI (Milestone 2).
 
 ## 6. Train and export
 
-_Placeholder._ Training starts from the Dev UI; export format is chosen in the export-format spike (Milestone 3).
+Run the training service (`.venv/bin/python -m cara_training.service`), then press **Start training** in the Dev UI. The service queues one job at a time and runs it as `docker compose run --rm -T train python -m cara_training.stub_train <model kind>` (a stub until the real trainer lands); the trainer's last stdout line is its final metrics as JSON. Job status (queued / running / succeeded / failed) is in memory and lost when the service restarts. Export format is chosen in the export-format spike (Milestone 3).

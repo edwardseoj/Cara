@@ -21,6 +21,10 @@
   <label>Gesture <select name="label"></select></label>
   <button id="record" type="button" disabled>Record</button>
   <output id="status"></output>
+  <label>Model <select id="model-kind"><option>static</option><option>dynamic</option></select></label>
+  <button id="train" type="button">Start training</button>
+  <output id="train-status"></output>
 </form>
+<script type="module" src="dev/train.mjs"></script>
 <script type="module" src="dev/dev-ui.mjs"></script>
 <script type="module" src="renderer.mjs"></script>

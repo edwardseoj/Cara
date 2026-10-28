@@ -10,6 +10,8 @@ from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import psycopg
 from psycopg.types.json import Jsonb
 
+from cara_training import jobs
+
 DEFAULT_URL = "postgresql://cara:cara@127.0.0.1:5433/cara"
 DEFAULT_PORT = 8765
 
@@ -45,6 +47,8 @@ def save_sample(conn, body, _match):
 ROUTES = [
     ("POST", r"/sessions", create_session),
     ("POST", r"/samples", save_sample),
+    ("POST", r"/jobs", jobs.start),
+    ("GET", r"/jobs/(\d+)", jobs.get),
 ]
 
 
