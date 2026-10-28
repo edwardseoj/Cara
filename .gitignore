@@ -13,3 +13,6 @@ training/staging/
 *.dump
 *.sql.gz
 .env
+
+# MediaPipe model, fetched by app postinstall
+app/models/
