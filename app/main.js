@@ -13,7 +13,9 @@ app.whenReady().then(() => {
     if (!file.startsWith(__dirname + path.sep)) return new Response('', { status: 404 });
     return net.fetch(pathToFileURL(file).toString());
   });
-  new BrowserWindow({ width: 960, height: 640 }).loadURL('app://cara/index.html');
+  // Dev UI (ADR 0003) only when running from source; packaged builds exclude dev.html and dev/.
+  const page = app.isPackaged ? 'index.html' : 'dev.html';
+  new BrowserWindow({ width: 1000, height: 640 }).loadURL(`app://cara/${page}`);
 });
 
 app.on('window-all-closed', () => app.quit());
