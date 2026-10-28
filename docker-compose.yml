@@ -17,6 +17,10 @@ services:
     profiles: [train]
     build: ./training
     command: python -m cara_training.check_gpu
+    environment:
+      DATABASE_URL: postgresql://cara:cara@postgres:5432/cara
+    volumes:
+      - ./training/models:/work/models  # exported models land in training/models/static (gitignored)
     deploy:
       resources:
         reservations:

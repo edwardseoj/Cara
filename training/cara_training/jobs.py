@@ -17,8 +17,9 @@ MODEL_KINDS = {"static", "motion"}
 
 
 def command(model_kind):
-    # Stub trainer until the real one lands; swap the module name here.
-    return ["docker", "compose", "--profile", "train", "run", "--rm", "-T", "train", "python", "-m", "cara_training.stub_train", model_kind]
+    # shortcut: motion still runs the stub trainer, swap it when the motion trainer lands
+    trainer = ["cara_training.train_static"] if model_kind == "static" else ["cara_training.stub_train", model_kind]
+    return ["docker", "compose", "--profile", "train", "run", "--rm", "-T", "train", "python", "-m", *trainer]
 
 
 def _worker():
