@@ -53,3 +53,11 @@ _Avoid_: Capture, take, run
 **Sample**:
 One labeled span of consecutive frames within a recording session. A static gesture sample may be a single frame; a motion or two-hand gesture sample spans a short window.
 _Avoid_: Take, clip, example
+
+**Training job**:
+One run of training a model (static or motion) on the dataset, started from the Dev UI and run by the local training service (see ADR 0003).
+_Avoid_: Training run, build
+
+**Dev UI**:
+The developer-only screen shown when the app runs from source, used to record samples, manage the dataset and start training jobs. Packaged builds exclude it.
+_Avoid_: Admin panel, debug page

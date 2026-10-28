@@ -1,34 +1,54 @@
 <!doctype html>
+<html class="dark">
 <!-- Dev UI: index.html plus the recording form. Loaded only when unpackaged; excluded from builds. -->
 <meta charset="utf-8">
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://127.0.0.1:8765; media-src 'self' mediastream:">
 <title>Cara Dev UI</title>
+<link rel="stylesheet" href="dev/dev-ui.css">
 <style>
-  body { margin: 0; background: #000; color: #eee; font: 14px sans-serif; display: flex; gap: 16px; }
-  #stage { position: relative; width: 640px; height: 480px; }
   #stage > * { position: absolute; inset: 0; width: 100%; height: 100%; transform: scaleX(-1); }
-  form { display: grid; gap: 8px; padding: 16px; align-content: start; }
 </style>
-<div id="stage">
+<body class="flex h-screen overflow-hidden bg-background text-foreground font-sans text-sm">
+<div id="stage" class="relative shrink-0 w-[640px] h-[480px] bg-black">
   <video id="video" autoplay playsinline muted></video>
   <canvas id="overlay" width="640" height="480"></canvas>
 </div>
-<form id="dev">
-  <label>Recorder ID <input name="recorder_id" required></label>
-  <label>Lighting <input name="lighting" required></label>
-  <label>Camera <input name="camera" required></label>
-  <button id="start" type="button">Start recording session</button>
-  <label>Gesture <select name="label"></select></label>
-  <label>Frames per sample <input name="frames" type="number" min="1"></label>
-  <label>Countdown (s) <input name="countdown" type="number" min="0" value="3"></label>
-  <button id="record" type="button" disabled>Record</button>
-  <output id="status"></output>
-  <label>Model <select id="model-kind"><option>static</option><option>motion</option></select></label>
-  <button id="train" type="button">Start training</button>
-  <output id="train-status"></output>
-  <label>Sample ID <input id="delete-id" type="number" min="1"></label>
-  <button id="delete" type="button">Delete sample</button>
-  <output id="counts" style="white-space: pre"></output>
+<form id="dev" class="w-[420px] h-full overflow-y-auto p-4 flex flex-col gap-4 [&>*]:shrink-0">
+  <section class="card">
+    <header><h2>Recording session</h2></header>
+    <section class="grid gap-3">
+      <div class="grid gap-2"><label class="label" for="recorder_id">Recorder ID</label><input class="input" id="recorder_id" name="recorder_id" required></div>
+      <div class="grid gap-2"><label class="label" for="lighting">Lighting</label><input class="input" id="lighting" name="lighting" required></div>
+      <div class="grid gap-2"><label class="label" for="camera">Camera</label><input class="input" id="camera" name="camera" required></div>
+      <button class="btn" id="start" type="button">Start recording session</button>
+    </section>
+  </section>
+  <section class="card">
+    <header><h2>Record sample</h2></header>
+    <section class="grid gap-3">
+      <div class="grid gap-2"><label class="label" for="label">Gesture</label><select class="select w-full" id="label" name="label"></select></div>
+      <div class="grid gap-2"><label class="label" for="frames">Frames per sample</label><input class="input" id="frames" name="frames" type="number" min="1"></div>
+      <div class="grid gap-2"><label class="label" for="countdown">Countdown (s)</label><input class="input" id="countdown" name="countdown" type="number" min="0" value="3"></div>
+      <button class="btn" id="record" type="button" disabled>Record</button>
+      <output id="status" class="text-muted-foreground"></output>
+    </section>
+  </section>
+  <section class="card">
+    <header><h2>Dataset</h2></header>
+    <section class="grid gap-3">
+      <output id="counts" class="whitespace-pre font-mono text-xs"></output>
+      <div class="grid gap-2"><label class="label" for="delete-id">Sample ID</label><input class="input" id="delete-id" type="number" min="1"></div>
+      <button class="btn-destructive" id="delete" type="button">Delete sample</button>
+    </section>
+  </section>
+  <section class="card">
+    <header><h2>Training</h2></header>
+    <section class="grid gap-3">
+      <div class="grid gap-2"><label class="label" for="model-kind">Model</label><select class="select w-full" id="model-kind"><option>static</option><option>motion</option></select></div>
+      <button class="btn" id="train" type="button">Start training</button>
+      <output id="train-status" class="text-muted-foreground"></output>
+    </section>
+  </section>
 </form>
 <script type="module" src="dev/samples.mjs"></script>
 <script type="module" src="dev/train.mjs"></script>

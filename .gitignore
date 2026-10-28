@@ -16,3 +16,6 @@ training/staging/
 
 # MediaPipe model, fetched by app postinstall
 app/models/
+
+# Dev UI stylesheet, compiled by app prestart
+app/dev/dev-ui.css
