@@ -1,26 +1,32 @@
 // Dev UI: sample counts per gesture / recording session, and delete a sample by id (#24).
-import { SERVICE } from './record.mjs';
+import { SERVICE, GESTURE_LABELS } from './record.mjs';
 
-const list = (o) => Object.entries(o).map(([k, n]) => `${k} ${n}`).join(', ') || 'none';
-const listSessions = (o) => Object.entries(o).map(([k, n]) => `${k}: ${n}`).join(', ') || 'none';
-
-export function formatCounts({ by_gesture, by_session }) {
-  return `gesture: ${list(by_gesture)}\nrecording session: ${listSessions(by_session)}`;
+export function countRows({ by_gesture, by_session }, labels) {
+  const names = [...new Set([...labels, ...Object.keys(by_gesture)])];
+  return { gestures: names.map((l) => [l, by_gesture[l] ?? 0]), sessions: Object.entries(by_session) };
 }
 
 if (typeof document !== 'undefined') {
-  const out = document.getElementById('counts');
+  const err = document.getElementById('dataset-error');
   const id = document.getElementById('delete-id');
+  const fill = (tbody, rows) => tbody.replaceChildren(...rows.map((cells) => {
+    const tr = document.createElement('tr');
+    tr.append(...cells.map((c) => Object.assign(document.createElement('td'), { textContent: c })));
+    return tr;
+  }));
 
   const refresh = async () => {
     try {
-      out.textContent = formatCounts(await (await fetch(SERVICE + '/counts')).json());
-    } catch (e) { out.textContent = `error: ${e.message}`; }
+      const { gestures, sessions } = countRows(await (await fetch(SERVICE + '/counts')).json(), GESTURE_LABELS);
+      fill(document.getElementById('gesture-counts'), gestures);
+      fill(document.getElementById('session-counts'), sessions);
+      err.textContent = '';
+    } catch (e) { err.textContent = `error: ${e.message}`; }
   };
 
   document.getElementById('delete').onclick = async () => {
     const res = await fetch(`${SERVICE}/samples/${Number(id.value)}`, { method: 'DELETE' });
-    out.textContent = res.ok ? '' : `error: ${(await res.json()).error}`;
+    err.textContent = res.ok ? '' : `error: ${(await res.json()).error}`;
     if (res.ok) refresh();
   };
 
