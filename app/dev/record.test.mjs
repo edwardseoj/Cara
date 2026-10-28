@@ -24,6 +24,12 @@ test('captureFrames collects the next N frames from landmark events', async () =
   assert.deepStrictEqual((await done).map((f) => f.timestamp), [1, 2]);
 });
 
+test('camera overlay sits over the stage and is not mirrored', () => {
+  const html = readFileSync(new URL('../dev.html', import.meta.url), 'utf8');
+  assert.match(html, /<div id="stage"[^>]*>[\s\S]*id="stage-overlay"[\s\S]*<\/div>\s*<form/);
+  assert.ok(!html.includes('#stage > *'), 'mirror rule must target only video and canvas');
+});
+
 test('shipped app has no Postgres driver', () => {
   const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url)));
   const deps = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });

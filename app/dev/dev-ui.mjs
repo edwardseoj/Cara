@@ -10,6 +10,14 @@ form.frames.value = WINDOW_FRAMES;
 
 let session = null;
 const say = (msg) => { status.textContent = msg; };
+const countdownEl = document.getElementById('stage-countdown');
+const recordingEl = document.getElementById('stage-recording');
+// Camera overlay: a number during countdown, the Recording badge while capturing, nothing otherwise.
+const overlay = (countdown, recording = false) => {
+  countdownEl.textContent = countdown ?? '';
+  countdownEl.hidden = countdown == null;
+  recordingEl.hidden = !recording;
+};
 
 document.getElementById('start').onclick = async () => {
   if (!form.reportValidity()) return;
@@ -29,13 +37,16 @@ record.onclick = async () => {
   try {
     for (let s = Number(form.countdown.value) || 0; s > 0; s--) {
       say(`get ready: ${s}`);
+      overlay(s);
       await new Promise((r) => setTimeout(r, 1000));
     }
     say(`recording ${n} frames...`);
+    overlay(null, true);
     const frames = await captureFrames(window, n);
     const { id } = await post('/samples', sampleBody({ sessionId: session.id, sessionStart: session.start, label, frames }));
     document.dispatchEvent(new Event('sample-saved'));
     say(`saved sample ${id} (${label}, ${n} frames, ${Math.round(frames.at(-1).timestamp - frames[0].timestamp)} ms)`);
   } catch (e) { say(`error: ${e.message}`); }
+  overlay(null);
   record.disabled = false;
 };
