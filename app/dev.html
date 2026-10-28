@@ -21,6 +21,10 @@
   <label>Gesture <select name="label"></select></label>
   <button id="record" type="button" disabled>Record</button>
   <output id="status"></output>
+  <label>Sample ID <input id="delete-id" type="number" min="1"></label>
+  <button id="delete" type="button">Delete sample</button>
+  <output id="counts" style="white-space: pre"></output>
 </form>
+<script type="module" src="dev/samples.mjs"></script>
 <script type="module" src="dev/dev-ui.mjs"></script>
 <script type="module" src="renderer.mjs"></script>
