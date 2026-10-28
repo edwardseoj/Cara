@@ -92,7 +92,8 @@ def make_server(db_url=DEFAULT_URL, port=DEFAULT_PORT):
                 length = int(self.headers.get("Content-Length") or 0)
                 body = json.loads(self.rfile.read(length) or "{}")
                 with psycopg.connect(db_url) as conn:  # one transaction per request
-                    self._send(*handler(conn, body, match))
+                    result = handler(conn, body, match)
+                self._send(*result)  # after commit, so a 2xx means the write is visible
             except (BadRequest, KeyError, TypeError, ValueError, psycopg.errors.IntegrityError, psycopg.errors.DataError) as e:
                 self._send(400, {"error": str(e)})
             except Exception as e:  # noqa: BLE001  answer instead of dropping the connection
