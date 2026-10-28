@@ -33,6 +33,14 @@ export function captureFrames(target, n) {
   });
 }
 
+// Dev UI status line: muted text, or Basecoat's destructive alert on error; hidden when empty.
+export function showStatus(el, msg, error = false) {
+  el.textContent = msg;
+  el.hidden = !msg;
+  el.className = error ? 'alert' : 'text-muted-foreground';
+  if (error) el.dataset.variant = 'destructive'; else delete el.dataset.variant;
+}
+
 export async function post(path, body) {
   const res = await fetch(SERVICE + path, {
     method: 'POST',

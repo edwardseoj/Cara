@@ -19,3 +19,8 @@ test('error comes back separately from the title', () => {
   assert.strictEqual(v.error, 'boom');
   assert.strictEqual(jobView({ id: 3, model_kind: 'static', status: 'running' }).error, undefined);
 });
+
+test('nested metrics flatten into dotted labels', () => {
+  assert.deepStrictEqual(jobView({ id: 3, model_kind: 'static', status: 'succeeded', metrics: { accuracy: 0.9, per_class: { idle: 0.8, fist: { f1: 0.7 } } } }).rows,
+    [['accuracy', '0.9'], ['per_class.idle', '0.8'], ['per_class.fist.f1', '0.7']]);
+});

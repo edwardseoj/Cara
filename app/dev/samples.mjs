@@ -1,5 +1,5 @@
 // Dev UI: sample counts per gesture / recording session, and delete a sample by id (#24).
-import { SERVICE, GESTURE_LABELS } from './record.mjs';
+import { SERVICE, GESTURE_LABELS, showStatus } from './record.mjs';
 
 export function countRows({ by_gesture, by_session }, labels) {
   const names = [...new Set([...labels, ...Object.keys(by_gesture)])];
@@ -20,14 +20,17 @@ if (typeof document !== 'undefined') {
       const { gestures, sessions } = countRows(await (await fetch(SERVICE + '/counts')).json(), GESTURE_LABELS);
       fill(document.getElementById('gesture-counts'), gestures);
       fill(document.getElementById('session-counts'), sessions);
-      err.textContent = '';
-    } catch (e) { err.textContent = `error: ${e.message}`; }
+      showStatus(err, '', true);
+    } catch (e) { showStatus(err, `error: ${e.message}`, true); }
   };
 
   document.getElementById('delete').onclick = async () => {
-    const res = await fetch(`${SERVICE}/samples/${Number(id.value)}`, { method: 'DELETE' });
-    err.textContent = res.ok ? '' : `error: ${(await res.json()).error}`;
-    if (res.ok) refresh();
+    try {
+      const res = await fetch(`${SERVICE}/samples/${Number(id.value)}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error((await res.json()).error || res.status);
+      showStatus(err, '', true);
+      refresh();
+    } catch (e) { showStatus(err, `error: ${e.message}`, true); }
   };
 
   document.addEventListener('sample-saved', refresh); // dispatched by dev-ui.mjs

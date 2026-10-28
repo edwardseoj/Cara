@@ -1,5 +1,5 @@
 // Dev UI form: start a recording session, then after a countdown, save the next N landmark frames as one sample.
-import { GESTURE_LABELS, WINDOW_FRAMES, sampleBody, captureFrames, post } from './record.mjs';
+import { GESTURE_LABELS, WINDOW_FRAMES, sampleBody, captureFrames, post, showStatus } from './record.mjs';
 
 const form = document.getElementById('dev');
 const status = document.getElementById('status');
@@ -17,10 +17,9 @@ const overlay = (countdown, recording = false) => {
   countdownEl.hidden = countdown == null;
   recordingEl.hidden = !recording;
 };
-// Each card has its own status line; errors show in the destructive style.
-const sayIn = (el) => (msg, error = false) => { el.textContent = msg; el.classList.toggle('text-destructive', error); };
-const say = sayIn(status);
-const saySession = sayIn(document.getElementById('session-status'));
+// Each card has its own status line; errors show as Basecoat's destructive alert.
+const sayRecord = (msg, error) => showStatus(status, msg, error);
+const saySession = (msg, error) => showStatus(document.getElementById('session-status'), msg, error);
 const badge = document.getElementById('session-badge');
 
 document.getElementById('start').onclick = async () => {
@@ -42,17 +41,17 @@ record.onclick = async () => {
   record.disabled = true;
   try {
     for (let s = Number(form.countdown.value) || 0; s > 0; s--) {
-      say(`get ready: ${s}`);
+      sayRecord(`get ready: ${s}`);
       overlay(s);
       await new Promise((r) => setTimeout(r, 1000));
     }
-    say(`recording ${n} frames...`);
+    sayRecord(`recording ${n} frames...`);
     overlay(null, true);
     const frames = await captureFrames(window, n);
     const { id } = await post('/samples', sampleBody({ sessionId: session.id, sessionStart: session.start, label, frames }));
     document.dispatchEvent(new Event('sample-saved'));
-    say(`saved sample ${id} (${label}, ${n} frames, ${Math.round(frames.at(-1).timestamp - frames[0].timestamp)} ms)`);
-  } catch (e) { say(`error: ${e.message}`, true); }
+    sayRecord(`saved sample ${id} (${label}, ${n} frames, ${Math.round(frames.at(-1).timestamp - frames[0].timestamp)} ms)`);
+  } catch (e) { sayRecord(`error: ${e.message}`, true); }
   overlay(null);
   record.disabled = false;
 };
