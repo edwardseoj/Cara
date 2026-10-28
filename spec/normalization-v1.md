@@ -11,15 +11,15 @@ One frame: a list of 0–2 hands. Each hand has:
 
 ## Per hand
 
-1. **Validity.** A hand whose `handedness` is anything other than `"Left"` or `"Right"` is ignored entirely. A hand with no `landmarks` list, fewer than 21 landmarks, or any `null` among its first 21 is treated as absent. Partial hands are dropped, not repaired. If there are more than 21 landmarks, only the first 21 are used.
+1. **Validity.** A hand whose `handedness` is anything other than `"Left"` or `"Right"` is ignored entirely. A hand with no `landmarks` list, fewer than 21 landmarks, or any `null` among its first 21 is treated as absent. Partial hands are dropped, not repaired (see [known risks](../docs/known-risks.md)). If there are more than 21 landmarks, only the first 21 are used.
 2. **Origin.** Subtract the wrist (landmark 0) from every landmark, on all three axes.
-3. **Scale.** `s = sqrt(dx² + dy²)`, the x/y distance from wrist to middle-finger MCP (landmark 9). z is left out because MediaPipe's z is noisy. If `s < 1e-6`, the scale is degenerate and the hand is treated as absent. Otherwise divide x, y and z of every landmark by `s`.
+3. **Scale.** `s = sqrt(dx² + dy² + dz²)`, the 3D distance from wrist to middle-finger MCP (landmark 9). Including z keeps the scale stable when the hand tilts toward or away from the camera. If `s < 1e-6`, the scale is degenerate and the hand is treated as absent. Otherwise divide x, y and z of every landmark by `s`.
 4. **Rotation.** None. Hand orientation is part of the gesture.
 5. **Handedness.** For a `"Left"` hand, negate x after steps 2–3, so both hands share the right-hand frame. y and z are unchanged.
 
 ## Two-hand layout
 
-The output has two fixed slots: **slot 0 = Left, slot 1 = Right**. Each hand goes in the slot named by its handedness. If two hands claim the same handedness, the first in input order claims the slot even if it is invalid (partial or degenerate): the slot stays absent and the later same-handed hand is dropped. Ignored hands (unknown handedness) claim nothing.
+The output has two fixed slots: **slot 0 = Left, slot 1 = Right**. Each hand goes in the slot named by its handedness. If two hands claim the same handedness, the first valid one in input order fills the slot and later ones are dropped. Invalid hands (partial, degenerate, unknown handedness) claim nothing, so a valid hand listed after an invalid one of the same handedness still fills the slot.
 
 ## Output vector (128 floats)
 

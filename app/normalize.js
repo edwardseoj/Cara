@@ -14,7 +14,8 @@ function normalizeHand(hand) {
   const landmarks = hand.landmarks.slice(0, LANDMARK_COUNT);
   if (landmarks.some((p) => p == null)) return null;
   const [wx, wy, wz] = landmarks[WRIST];
-  const scale = Math.hypot(landmarks[MIDDLE_MCP][0] - wx, landmarks[MIDDLE_MCP][1] - wy);
+  const [mx, my, mz] = landmarks[MIDDLE_MCP];
+  const scale = Math.hypot(mx - wx, my - wy, mz - wz);
   if (scale < MIN_SCALE) return null;
   const { xSign } = SIDES[hand.handedness];
   return landmarks.flatMap(([x, y, z]) => [xSign * (x - wx) / scale, (y - wy) / scale, (z - wz) / scale]);
@@ -27,9 +28,9 @@ function normalize(hands) {
   for (const hand of hands) {
     const side = Object.hasOwn(SIDES, hand.handedness) ? SIDES[hand.handedness] : undefined;
     if (!side || claimed.has(side.slot)) continue;
-    claimed.add(side.slot); // first claim wins, even if this hand turns out invalid
     const coords = normalizeHand(hand);
-    if (!coords) continue;
+    if (!coords) continue; // invalid hands claim no slot
+    claimed.add(side.slot);
     out.splice(side.slot * SLOT_SIZE, SLOT_SIZE, 1, ...coords);
   }
   return out;

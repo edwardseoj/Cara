@@ -20,7 +20,7 @@ def normalize_hand(hand):
     if any(p is None for p in landmarks):
         return None
     wx, wy, wz = landmarks[WRIST]
-    scale = math.hypot(landmarks[MIDDLE_MCP][0] - wx, landmarks[MIDDLE_MCP][1] - wy)
+    scale = math.dist(landmarks[MIDDLE_MCP], landmarks[WRIST])
     if scale < MIN_SCALE:
         return None
     _, x_sign = SIDES[hand["handedness"]]
@@ -36,9 +36,9 @@ def normalize(hands):
         if side is None or side[0] in claimed:
             continue
         slot = side[0]
-        claimed.add(slot)  # first claim wins, even if this hand turns out invalid
         coords = normalize_hand(hand)
-        if coords:
+        if coords:  # invalid hands claim no slot
+            claimed.add(slot)
             start = slot * SLOT_SIZE
             out[start:start + SLOT_SIZE] = [1.0, *coords]
     return out
