@@ -1,3 +1,7 @@
+import pytest
+
+pytest.importorskip("mediapipe")  # viewer extra is optional
+
 import numpy as np
 
 from cara_training.viewer import draw_landmarks, hands_mod

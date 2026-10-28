@@ -177,7 +177,7 @@ Detailed progress lives in the [Roadmap issue](https://github.com/edwardseoj/Car
 
 - [x] **0. Setup**: repo, Docker training stack + Postgres, Python script showing the camera feed with landmarks
 - [x] **0.5. Spotify spike**: register an app, OAuth PKCE login, play/pause from a script
-- [ ] **1. Normalization spec**: shared landmark preprocessing spec + test vectors (Python and JS both pass)
+- [x] **1. Normalization spec**: shared landmark preprocessing spec + test vectors (Python and JS both pass)
 - [ ] **2. Dev UI**: Electron with live landmarks, record mode (pick a label → save frames to Postgres), start-training button
 - [ ] **3. Static gestures**: play, pause, like/unlike + idle. Train, export, run inference in JS with threshold + hold-N-frames
 - [ ] **4. MVP v0.1**: connect gestures to Spotify (Linux build)
