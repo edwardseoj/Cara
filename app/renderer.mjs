@@ -1,12 +1,16 @@
 // Landmark source: webcam -> MediaPipe HandLandmarker (local wasm + model) -> raw frames.
 // Everything stays in this process; nothing is sent anywhere.
 import { FilesetResolver, HandLandmarker, DrawingUtils } from './node_modules/@mediapipe/tasks-vision/vision_bundle.mjs';
-import { toFrame } from './landmarks.mjs';
+import { toFrame, handLabels } from './landmarks.mjs';
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('overlay');
 const ctx = canvas.getContext('2d');
 const draw = new DrawingUtils(ctx);
+ctx.font = '14px sans-serif';
+ctx.textAlign = 'center';
+ctx.textBaseline = 'top';
+ctx.fillStyle = '#fff';
 
 const fileset = await FilesetResolver.forVisionTasks('./node_modules/@mediapipe/tasks-vision/wasm');
 const tracker = await HandLandmarker.createFromOptions(fileset, {
@@ -31,6 +35,14 @@ function tick() {
     for (const points of result.landmarks) {
       draw.drawConnectors(points, HandLandmarker.HAND_CONNECTIONS, { color: '#0f0', lineWidth: 3 });
       draw.drawLandmarks(points, { color: '#f00', radius: 3 });
+    }
+    for (const { text, x, y } of handLabels(frame, canvas.width, canvas.height)) {
+      // The canvas is CSS-mirrored; flip locally so the glyphs read normally.
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(-1, 1);
+      ctx.fillText(text, 0, 0);
+      ctx.restore();
     }
   }
   requestAnimationFrame(tick);

@@ -11,3 +11,22 @@ export function toFrame(result, timestamp) {
     })),
   };
 }
+
+// The tracker assumes a mirrored (selfie) image but gets unmirrored frames, so its
+// handedness is the opposite of the user's real hand. Frames keep the raw label;
+// anything user-facing converts through here. Unknown labels give null.
+export function userHand(handedness) {
+  return handedness === 'Left' ? 'Right' : handedness === 'Right' ? 'Left' : null;
+}
+
+const LABEL_OFFSET_Y = 16; // px below the wrist, clear of the palm landmarks
+
+// One overlay label per hand, in frame order: { text: 'Right 97%', x, y } anchored
+// just below the wrist (landmark 0), in the unmirrored canvas pixels the landmarks use.
+export function handLabels(frame, width, height) {
+  return frame.hands.map(({ handedness, score, landmarks: [[x, y]] }) => ({
+    text: `${userHand(handedness) ?? '?'} ${Math.round(score * 100)}%`,
+    x: x * width,
+    y: y * height + LABEL_OFFSET_Y,
+  }));
+}
