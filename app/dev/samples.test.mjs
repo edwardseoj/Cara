@@ -1,14 +1,19 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { formatCounts } from './samples.mjs';
+import { countRows } from './samples.mjs';
 
-test('formats counts per gesture and per recording session', () => {
-  assert.equal(
-    formatCounts({ by_gesture: { fist: 2, idle: 1 }, by_session: { 7: 3 } }),
-    'gesture: fist 2, idle 1\nrecording session: 7: 3',
-  );
+const labels = ['idle', 'fist', 'thumbs up'];
+
+test('lists every gesture label in label order, 0 for missing', () => {
+  assert.deepEqual(countRows({ by_gesture: { fist: 2 }, by_session: {} }, labels).gestures,
+    [['idle', 0], ['fist', 2], ['thumbs up', 0]]);
 });
 
-test('formats empty dataset', () => {
-  assert.equal(formatCounts({ by_gesture: {}, by_session: {} }), 'gesture: none\nrecording session: none');
+test('keeps labels in counts that are not in the label list', () => {
+  assert.deepEqual(countRows({ by_gesture: { wave: 4 }, by_session: {} }, labels).gestures.at(-1), ['wave', 4]);
+});
+
+test('lists recording session id and count; empty dataset has none', () => {
+  assert.deepEqual(countRows({ by_gesture: {}, by_session: { 7: 3 } }, labels).sessions, [['7', 3]]);
+  assert.deepEqual(countRows({ by_gesture: {}, by_session: {} }, labels).sessions, []);
 });

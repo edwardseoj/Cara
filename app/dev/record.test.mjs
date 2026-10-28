@@ -30,6 +30,17 @@ test('camera overlay sits over the stage and is not mirrored', () => {
   assert.ok(!html.includes('#stage > *'), 'mirror rule must target only video and canvas');
 });
 
+test('Dev UI: Record sample button, per-card status lines, recording session wording', () => {
+  const html = readFileSync(new URL('../dev.html', import.meta.url), 'utf8');
+  const js = readFileSync(new URL('./dev-ui.mjs', import.meta.url), 'utf8');
+  assert.match(html, /id="record"[^>]*>Record sample</);
+  assert.match(html, /id="start"[^>]*>Start recording session<\/button>\s*<output id="session-status"/);
+  assert.match(html, /id="session-badge"/);
+  assert.match(js, /Recording session \$\{id\} started/);
+  assert.match(js, /Recording session \$\{id\} active/);
+  assert.doesNotMatch(js, /`session \$/);
+});
+
 test('shipped app has no Postgres driver', () => {
   const pkg = JSON.parse(readFileSync(new URL('../package.json', import.meta.url)));
   const deps = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies });

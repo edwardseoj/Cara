@@ -19,12 +19,13 @@
 </div>
 <form id="dev" class="w-[420px] h-full overflow-y-auto p-4 flex flex-col gap-4 [&>*]:shrink-0">
   <section class="card">
-    <header><h2>Recording session</h2></header>
+    <header class="flex items-center justify-between"><h2>Recording session</h2><span class="badge" id="session-badge" hidden></span></header>
     <section class="grid gap-3">
       <div class="grid gap-2"><label class="label" for="recorder_id">Recorder ID</label><input class="input" id="recorder_id" name="recorder_id" required></div>
       <div class="grid gap-2"><label class="label" for="lighting">Lighting</label><input class="input" id="lighting" name="lighting" required></div>
       <div class="grid gap-2"><label class="label" for="camera">Camera</label><input class="input" id="camera" name="camera" required></div>
       <button class="btn" id="start" type="button">Start recording session</button>
+      <output id="session-status" class="text-muted-foreground"></output>
     </section>
   </section>
   <section class="card">
@@ -33,14 +34,15 @@
       <div class="grid gap-2"><label class="label" for="label">Gesture</label><select class="select w-full" id="label" name="label"></select></div>
       <div class="grid gap-2"><label class="label" for="frames">Frames per sample</label><input class="input" id="frames" name="frames" type="number" min="1"></div>
       <div class="grid gap-2"><label class="label" for="countdown">Countdown (s)</label><input class="input" id="countdown" name="countdown" type="number" min="0" value="3"></div>
-      <button class="btn" id="record" type="button" disabled>Record</button>
-      <output id="status" class="text-muted-foreground"></output>
-    </section>
+      <button class="btn" id="record" type="button" disabled>Record sample</button>
+      <output id="status" class="text-muted-foreground"></output>    </section>
   </section>
   <section class="card">
     <header><h2>Dataset</h2></header>
     <section class="grid gap-3">
-      <output id="counts" class="whitespace-pre font-mono text-xs"></output>
+      <output id="dataset-error" class="text-destructive"></output>
+      <table class="table"><caption>Samples per gesture</caption><thead><tr><th>Gesture</th><th>Samples</th></tr></thead><tbody id="gesture-counts"></tbody></table>
+      <table class="table"><caption>Samples per recording session</caption><thead><tr><th>Recording session</th><th>Samples</th></tr></thead><tbody id="session-counts"></tbody></table>
       <div class="grid gap-2"><label class="label" for="delete-id">Sample ID</label><input class="input" id="delete-id" type="number" min="1"></div>
       <button class="btn-destructive" id="delete" type="button">Delete sample</button>
     </section>
@@ -48,9 +50,9 @@
   <section class="card">
     <header><h2>Training</h2></header>
     <section class="grid gap-3">
-      <div class="grid gap-2"><label class="label" for="model-kind">Model</label><select class="select w-full" id="model-kind"><option>static</option><option>motion</option></select></div>
+      <div class="grid gap-2"><label class="label" for="model-kind">Model kind</label><select class="select w-full" id="model-kind"><option value="static">static gestures</option><option value="motion">motion gestures</option></select></div>
       <button class="btn" id="train" type="button">Start training</button>
-      <output id="train-status" class="text-muted-foreground"></output>
+      <div class="grid gap-1 text-sm"><p id="train-title" class="font-medium"></p><dl id="train-metrics" class="grid grid-cols-2 gap-x-4 text-muted-foreground"></dl><p id="train-error" class="text-destructive"></p></div>
     </section>
   </section>
 </form>

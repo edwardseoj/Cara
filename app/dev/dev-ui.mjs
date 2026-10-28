@@ -9,7 +9,6 @@ form.label.append(...GESTURE_LABELS.map((l) => new Option(l)));
 form.frames.value = WINDOW_FRAMES;
 
 let session = null;
-const say = (msg) => { status.textContent = msg; };
 const countdownEl = document.getElementById('stage-countdown');
 const recordingEl = document.getElementById('stage-recording');
 // Camera overlay: a number during countdown, the Recording badge while capturing, nothing otherwise.
@@ -18,6 +17,11 @@ const overlay = (countdown, recording = false) => {
   countdownEl.hidden = countdown == null;
   recordingEl.hidden = !recording;
 };
+// Each card has its own status line; errors show in the destructive style.
+const sayIn = (el) => (msg, error = false) => { el.textContent = msg; el.classList.toggle('text-destructive', error); };
+const say = sayIn(status);
+const saySession = sayIn(document.getElementById('session-status'));
+const badge = document.getElementById('session-badge');
 
 document.getElementById('start').onclick = async () => {
   if (!form.reportValidity()) return;
@@ -26,8 +30,10 @@ document.getElementById('start').onclick = async () => {
     const { id } = await post('/sessions', { ...fields, source: 'webcam' });
     session = { id, start: performance.now() };
     record.disabled = false;
-    say(`session ${id}`);
-  } catch (e) { say(`error: ${e.message}`); }
+    saySession(`Recording session ${id} started`);
+    badge.textContent = `Recording session ${id} active`;
+    badge.hidden = false;
+  } catch (e) { saySession(`error: ${e.message}`, true); }
 };
 
 record.onclick = async () => {
@@ -46,7 +52,7 @@ record.onclick = async () => {
     const { id } = await post('/samples', sampleBody({ sessionId: session.id, sessionStart: session.start, label, frames }));
     document.dispatchEvent(new Event('sample-saved'));
     say(`saved sample ${id} (${label}, ${n} frames, ${Math.round(frames.at(-1).timestamp - frames[0].timestamp)} ms)`);
-  } catch (e) { say(`error: ${e.message}`); }
+  } catch (e) { say(`error: ${e.message}`, true); }
   overlay(null);
   record.disabled = false;
 };
