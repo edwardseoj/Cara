@@ -23,7 +23,7 @@ A gesture that requires both hands to be recognized, such as volume control.
 _Avoid_: Dual gesture
 
 **Handedness**:
-Whether a hand is the user's left or right hand, from the user's own point of view. The landmark frame's `handedness` field holds the tracker's raw label, which is mirrored relative to this; the mirror-rule function converts between the two (see ADR 0004).
+Whether a hand is the user's left or right hand, from the user's own point of view. The landmark frame's `handedness` field holds the tracker's raw label, which is mirrored relative to this; `userHand` in `app/landmarks.mjs` converts between the two (see ADR 0004).
 _Avoid_: Side, chirality
 
 **Idle**:

@@ -1,13 +1,13 @@
 // Landmark source: webcam -> MediaPipe HandLandmarker (local wasm + model) -> raw frames.
 // Everything stays in this process; nothing is sent anywhere.
 import { FilesetResolver, HandLandmarker, DrawingUtils } from './node_modules/@mediapipe/tasks-vision/vision_bundle.mjs';
-import { toFrame, handLabels } from './landmarks.mjs';
+import { toFrame, handLabels, LABEL_FONT } from './landmarks.mjs';
 
 const video = document.getElementById('video');
 const canvas = document.getElementById('overlay');
 const ctx = canvas.getContext('2d');
 const draw = new DrawingUtils(ctx);
-ctx.font = '14px sans-serif';
+ctx.font = LABEL_FONT;
 ctx.textAlign = 'center';
 ctx.textBaseline = 'top';
 ctx.fillStyle = '#fff';
