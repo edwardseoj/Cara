@@ -8,7 +8,9 @@ import sys
 # TF.js 4.22 can't load Keras 3 layer configs (InputLayer batch_shape, DTypePolicy); export via Keras 2 (tf-keras)
 os.environ["TF_USE_LEGACY_KERAS"] = "1"
 
-FEATURES = 128  # spec/normalization-v1.md: 2 hand slots x (presence + 21 x xyz)
+from cara_training.normalize import SLOT_SIZE
+
+FEATURES = 2 * SLOT_SIZE  # one slot per hand
 CLASSES = 3  # toy: idle + two gestures
 
 

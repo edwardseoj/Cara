@@ -8,11 +8,11 @@ async function loadClassifier(modelJsonPath) {
   const { modelTopology, weightsManifest } = JSON.parse(fs.readFileSync(modelJsonPath, "utf8"));
   const dir = path.dirname(modelJsonPath);
   const buffers = weightsManifest.flatMap((g) => g.paths.map((p) => fs.readFileSync(path.join(dir, p))));
-  const data = Buffer.concat(buffers);
+  const weightData = Buffer.concat(buffers);
   const model = await tf.loadLayersModel(tf.io.fromMemory({
     modelTopology,
     weightSpecs: weightsManifest.flatMap((g) => g.weights),
-    weightData: data.buffer.slice(data.byteOffset, data.byteOffset + data.byteLength),
+    weightData: weightData.buffer.slice(weightData.byteOffset, weightData.byteOffset + weightData.byteLength),
   }));
   return (vector) => tf.tidy(() => Array.from(model.predict(tf.tensor2d([vector])).dataSync()));
 }

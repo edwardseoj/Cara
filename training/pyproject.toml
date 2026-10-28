@@ -8,7 +8,7 @@ dependencies = ["psycopg[binary]>=3.1"]
 dev = ["pytest"]
 # shortcut: legacy solutions API ships its own model, tasks API needs a model download; port when mediapipe drops 0.10.x
 viewer = ["mediapipe==0.10.21"]
-# spike #26: TF.js export; tensorflow itself comes from the cara-train image
+# spike #26: TF.js export; pins match the cara-train image and stop pip upgrading TF
 export = ["tensorflowjs==4.22.0", "tensorflow==2.16.2", "tensorflow-decision-forests==1.9.1"]
 
 [tool.pytest.ini_options]
