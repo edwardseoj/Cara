@@ -11,6 +11,7 @@ Electron app that maps webcam hand gestures to Spotify actions. `README.md` hold
 ## Commands
 
 - App (`app/`): `npm install`, `npm start`, `npm test` (Node built-in runner)
+- Dev UI stylesheet (`app/dev/dev-ui.css`, untracked) is built by `npm start` (prestart) or `npm run dev:css` (watch); missing it gives ERR_FILE_NOT_FOUND.
 - Training (`training/`): `python3 -m venv .venv && .venv/bin/pip install -e ".[dev]"`, `.venv/bin/pytest` (DB tests need Postgres up)
 - Postgres: `docker compose up -d` (host port 5433, schema from `training/migrations/` on first init; `docker compose down -v` to reset)
 

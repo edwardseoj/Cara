@@ -6,13 +6,22 @@
   "scripts": {
     "start": "electron .",
     "test": "node --test",
-    "postinstall": "node fetch-model.mjs"
+    "postinstall": "node fetch-model.mjs",
+    "prestart": "tailwindcss -i dev/dev-ui.src.css -o dev/dev-ui.css --minify",
+    "dev:css": "tailwindcss -i dev/dev-ui.src.css -o dev/dev-ui.css --watch"
   },
   "build": {
-    "files": ["**/*", "!dev.html", "!dev/**"]
+    "files": [
+      "**/*",
+      "!dev.html",
+      "!dev/**"
+    ]
   },
   "devDependencies": {
-    "electron": "^33.0.0"
+    "@tailwindcss/cli": "^4.3.3",
+    "basecoat-css": "^1.1.0",
+    "electron": "^33.0.0",
+    "tailwindcss": "^4.3.3"
   },
   "dependencies": {
     "@mediapipe/tasks-vision": "^0.10.14"

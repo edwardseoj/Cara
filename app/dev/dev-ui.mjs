@@ -1,5 +1,5 @@
 // Dev UI form: start a recording session, then after a countdown, save the next N landmark frames as one sample.
-import { GESTURE_LABELS, WINDOW_FRAMES, sampleBody, captureFrames, post } from './record.mjs';
+import { GESTURE_LABELS, WINDOW_FRAMES, sampleBody, captureFrames, post, showStatus } from './record.mjs';
 
 const form = document.getElementById('dev');
 const status = document.getElementById('status');
@@ -9,7 +9,18 @@ form.label.append(...GESTURE_LABELS.map((l) => new Option(l)));
 form.frames.value = WINDOW_FRAMES;
 
 let session = null;
-const say = (msg) => { status.textContent = msg; };
+const countdownEl = document.getElementById('stage-countdown');
+const recordingEl = document.getElementById('stage-recording');
+// Camera overlay: a number during countdown, the Recording badge while capturing, nothing otherwise.
+const overlay = (countdown, recording = false) => {
+  countdownEl.textContent = countdown ?? '';
+  countdownEl.hidden = countdown == null;
+  recordingEl.hidden = !recording;
+};
+// Each card has its own status line; errors show as Basecoat's destructive alert.
+const sayRecord = (msg, error) => showStatus(status, msg, error);
+const saySession = (msg, error) => showStatus(document.getElementById('session-status'), msg, error);
+const badge = document.getElementById('session-badge');
 
 document.getElementById('start').onclick = async () => {
   if (!form.reportValidity()) return;
@@ -18,8 +29,10 @@ document.getElementById('start').onclick = async () => {
     const { id } = await post('/sessions', { ...fields, source: 'webcam' });
     session = { id, start: performance.now() };
     record.disabled = false;
-    say(`session ${id}`);
-  } catch (e) { say(`error: ${e.message}`); }
+    saySession(`Recording session ${id} started`);
+    badge.textContent = `Recording session ${id} active`;
+    badge.hidden = false;
+  } catch (e) { saySession(`error: ${e.message}`, true); }
 };
 
 record.onclick = async () => {
@@ -28,14 +41,17 @@ record.onclick = async () => {
   record.disabled = true;
   try {
     for (let s = Number(form.countdown.value) || 0; s > 0; s--) {
-      say(`get ready: ${s}`);
+      sayRecord(`get ready: ${s}`);
+      overlay(s);
       await new Promise((r) => setTimeout(r, 1000));
     }
-    say(`recording ${n} frames...`);
+    sayRecord(`recording ${n} frames...`);
+    overlay(null, true);
     const frames = await captureFrames(window, n);
     const { id } = await post('/samples', sampleBody({ sessionId: session.id, sessionStart: session.start, label, frames }));
     document.dispatchEvent(new Event('sample-saved'));
-    say(`saved sample ${id} (${label}, ${n} frames, ${Math.round(frames.at(-1).timestamp - frames[0].timestamp)} ms)`);
-  } catch (e) { say(`error: ${e.message}`); }
+    sayRecord(`saved sample ${id} (${label}, ${n} frames, ${Math.round(frames.at(-1).timestamp - frames[0].timestamp)} ms)`);
+  } catch (e) { sayRecord(`error: ${e.message}`, true); }
+  overlay(null);
   record.disabled = false;
 };
