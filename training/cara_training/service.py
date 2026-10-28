@@ -11,6 +11,7 @@ import psycopg
 from psycopg.types.json import Jsonb
 
 from cara_training import jobs
+from cara_training import samples_admin
 
 DEFAULT_URL = "postgresql://cara:cara@127.0.0.1:5433/cara"
 DEFAULT_PORT = 8765
@@ -49,6 +50,8 @@ ROUTES = [
     ("POST", r"/samples", save_sample),
     ("POST", r"/jobs", jobs.start),
     ("GET", r"/jobs/(\d+)", jobs.get),
+    ("GET", r"/counts", samples_admin.counts),
+    ("DELETE", r"/samples/(\d+)", samples_admin.delete_sample),
 ]
 
 

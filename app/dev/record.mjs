@@ -2,17 +2,35 @@
 export const SERVICE = 'http://127.0.0.1:8765';
 export const GESTURE_LABELS = ['idle', 'open palm', 'fist', 'thumbs up', 'thumbs down'];
 
-// Frame from landmarks.mjs -> one-frame sample in the dataset's raw `hands` shape (0001_dataset.sql).
-export function sampleBody({ sessionId, sessionStart, label, frame }) {
-  const hands = frame.hands.map(({ handedness, landmarks }) => ({
-    handedness,
-    landmarks: landmarks.map(([x, y, z]) => ({ x, y, z })),
-  }));
+export const WINDOW_FRAMES = 30;
+
+// Frames from landmarks.mjs -> one sample in the dataset's raw `hands` shape (0001_dataset.sql), ordered.
+export function sampleBody({ sessionId, sessionStart, label, frames }) {
   return {
     recording_session_id: sessionId,
     gesture_label: label,
-    frames: [{ ts_ms: Math.round(frame.timestamp - sessionStart), hands }],
+    frames: frames.map((frame) => ({
+      ts_ms: Math.round(frame.timestamp - sessionStart),
+      hands: frame.hands.map(({ handedness, landmarks }) => ({
+        handedness,
+        landmarks: landmarks.map(([x, y, z]) => ({ x, y, z })),
+      })),
+    })),
   };
+}
+
+// Resolves with the next n 'landmarks' event frames dispatched on target.
+export function captureFrames(target, n) {
+  return new Promise((resolve) => {
+    const frames = [];
+    const on = (e) => {
+      frames.push(e.detail);
+      if (frames.length < n) return;
+      target.removeEventListener('landmarks', on);
+      resolve(frames);
+    };
+    target.addEventListener('landmarks', on);
+  });
 }
 
 export async function post(path, body) {
