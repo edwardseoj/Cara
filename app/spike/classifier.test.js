@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert");
 const path = require("node:path");
 const fs = require("node:fs");
-const { loadClassifier } = require("./classifier");
+const { loadClassifier } = require("../classifier");
 
 const TOY = path.join(__dirname, "toy-model", "model.json");
 
