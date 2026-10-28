@@ -25,4 +25,4 @@ Script: `app/spike/spotify-pkce.js`. It logs in with a Client ID only, then togg
 ## Not done
 
 - No token storage or refresh. That belongs to #30.
-- Still "Docs" only: the no-active-device error, the non-Premium error, and `play` (run the script again after a pause to see it). #17 stays open until these are observed.
+- Not observed before #17 closed: the no-active-device error, the non-Premium error, and `play`.
