@@ -6,7 +6,7 @@ Turns one frame of MediaPipe hand landmarks into a fixed-length feature vector. 
 
 One frame: a list of 0–2 hands. Each hand has:
 
-- `handedness`: `"Left"` or `"Right"`, as reported by MediaPipe.
+- `handedness`: `"Left"` or `"Right"`, as reported by MediaPipe. This is the tracker's raw label for an unmirrored image, so it is the opposite of the user's real hand (see [ADR 0004](../docs/adr/0004-landmark-frames-keep-the-trackers-raw-handedness.md)).
 - `landmarks`: 21 entries in MediaPipe order (0 = wrist, 9 = middle-finger MCP). Each entry is `[x, y, z]` or `null` if missing.
 
 ## Per hand
