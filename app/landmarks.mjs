@@ -1,5 +1,5 @@
 // Landmark frames and what the overlay shows of them: shapes a MediaPipe
-// HandLandmarker result into a raw frame, holds the mirror rule (userHand) that
+// HandLandmarker result into a raw frame, holds the handedness rule (userHand) that
 // turns the tracker's raw handedness into the user's real hand, and lays out the
 // per-hand overlay labels (handLabels).
 //
@@ -17,11 +17,11 @@ export function toFrame(result, timestamp) {
   };
 }
 
-const USER_HAND = Object.assign(Object.create(null), { Left: 'Right', Right: 'Left' });
+const USER_HAND = Object.assign(Object.create(null), { Left: 'Left', Right: 'Right' });
 
-// The tracker assumes a mirrored (selfie) image but gets unmirrored frames, so its
-// handedness is the opposite of the user's real hand. Frames keep the raw label;
-// anything user-facing converts through here. Unknown labels give null.
+// On Cara's unmirrored camera frames the tracker's raw handedness already names the
+// user's real hand (camera check, #73), despite MediaPipe's selfie-image docs.
+// Frames keep the raw label; anything user-facing converts through here. Unknown labels give null.
 export function userHand(handedness) {
   return USER_HAND[handedness] ?? null;
 }

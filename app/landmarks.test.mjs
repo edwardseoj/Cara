@@ -26,8 +26,8 @@ test('two hands become per-hand landmarks with handedness', () => {
   });
 });
 
-test('userHand swaps the raw tracker label to the user\'s real hand', () => {
-  assert.deepStrictEqual(['Left', 'Right', 'Unknown', undefined, 'toString'].map(userHand), ['Right', 'Left', null, null, null]);
+test('userHand gives the raw tracker label as the user\'s real hand (camera check, #73)', () => {
+  assert.deepStrictEqual(['Left', 'Right', 'Unknown', undefined, 'toString'].map(userHand), ['Left', 'Right', null, null, null]);
 });
 
 test('an empty frame gives no hand labels', () => {
@@ -36,13 +36,13 @@ test('an empty frame gives no hand labels', () => {
 
 test('one hand is labeled with the user\'s real hand and confidence just below its wrist', () => {
   const left = { ...hand(0.25, 0.5, 'Left', 0.97), landmarks: [[0.25, 0.5, 0], [0.9, 0.9, 0]] };
-  assert.deepStrictEqual(labels([left]), [{ text: 'Right 97%', x: 160, y: 256 }]);
+  assert.deepStrictEqual(labels([left]), [{ text: 'Left 97%', x: 160, y: 256 }]);
 });
 
 test('two hands give two labels in frame order, each at its own wrist', () => {
   assert.deepStrictEqual(labels([hand(0.75, 0.25, 'Right', 0.8), hand(0.5, 0.75, 'Left', 0.6)], 800, 400), [
-    { text: 'Left 80%', x: 600, y: 116 },
-    { text: 'Right 60%', x: 400, y: 316 },
+    { text: 'Right 80%', x: 600, y: 116 },
+    { text: 'Left 60%', x: 400, y: 316 },
   ]);
 });
 
@@ -67,10 +67,10 @@ test('an unknown raw handedness shows ? with its confidence', () => {
 });
 
 test('two hands with the same raw handedness both show it, not de-duplicated', () => {
-  assert.deepStrictEqual(texts([hand(0.25, 0.5, 'Right', 0.9), hand(0.75, 0.5, 'Right', 0.9)]), ['Left 90%', 'Left 90%']);
+  assert.deepStrictEqual(texts([hand(0.25, 0.5, 'Right', 0.9), hand(0.75, 0.5, 'Right', 0.9)]), ['Right 90%', 'Right 90%']);
 });
 
 test('confidence rounds to the nearest whole percent at the boundaries', () => {
   assert.deepStrictEqual(texts([0.995, 0.994, 0.005, 0.004, 1, 0].map((s) => hand(0.5, 0.5, 'Left', s))),
-    ['Right 100%', 'Right 99%', 'Right 1%', 'Right 0%', 'Right 100%', 'Right 0%']);
+    ['Left 100%', 'Left 99%', 'Left 1%', 'Left 0%', 'Left 100%', 'Left 0%']);
 });

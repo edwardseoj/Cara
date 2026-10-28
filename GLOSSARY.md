@@ -23,7 +23,7 @@ A gesture that requires both hands to be recognized, such as volume control.
 _Avoid_: Dual gesture
 
 **Handedness**:
-Whether a hand is the user's left or right hand, from the user's own point of view. The landmark frame's `handedness` field holds the tracker's raw label, which is mirrored relative to this; `userHand` in `app/landmarks.mjs` converts between the two (see ADR 0004).
+Whether a hand is the user's left or right hand, from the user's own point of view. The landmark frame's `handedness` field holds the tracker's raw label. On Cara's camera path that label matches the user's real hand, but user-facing code still reads it through `userHand` in `app/landmarks.mjs` (see ADR 0004).
 _Avoid_: Side, chirality
 
 **Idle**:
@@ -55,9 +55,11 @@ One labeled span of consecutive frames within a recording session. A static gest
 _Avoid_: Take, clip, example
 
 **Training job**:
-One run of training a model (static or motion) on the dataset, started from the Dev UI and run by the local training service (see ADR 0003).
+One run of training a gesture model of one kind (static or motion) on the current dataset, started from the Dev UI and run by the local training service (see ADR 0003). It is queued, runs, and then succeeds with metrics or fails with an error.
 _Avoid_: Training run, build
 
+### Tools
+
 **Dev UI**:
-The developer-only screen shown when the app runs from source, used to record samples, manage the dataset and start training jobs. Packaged builds exclude it.
-_Avoid_: Admin panel, debug page
+The development-only screen, shown when the app runs from source, for collecting samples, reviewing the dataset, and starting training jobs. Packaged builds exclude it, so it is never part of a release.
+_Avoid_: Admin panel, debug page, debug screen
