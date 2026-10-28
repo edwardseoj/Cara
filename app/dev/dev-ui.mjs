@@ -34,6 +34,7 @@ record.onclick = async () => {
     say(`recording ${n} frames...`);
     const frames = await captureFrames(window, n);
     const { id } = await post('/samples', sampleBody({ sessionId: session.id, sessionStart: session.start, label, frames }));
+    document.dispatchEvent(new Event('sample-saved'));
     say(`saved sample ${id} (${label}, ${n} frames, ${Math.round(frames.at(-1).timestamp - frames[0].timestamp)} ms)`);
   } catch (e) { say(`error: ${e.message}`); }
   record.disabled = false;

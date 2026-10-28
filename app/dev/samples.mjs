@@ -24,7 +24,6 @@ if (typeof document !== 'undefined') {
     if (res.ok) refresh();
   };
 
-  // Refresh after record: dev-ui.mjs reports each save in #status.
-  new MutationObserver(refresh).observe(document.getElementById('status'), { childList: true });
+  document.addEventListener('sample-saved', refresh); // dispatched by dev-ui.mjs
   refresh();
 }

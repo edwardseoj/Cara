@@ -24,6 +24,7 @@ def api(db_url):
         except urllib.error.HTTPError as e:
             return e.code, json.loads(e.read() or "null")
 
+    call.port = server.server_address[1]
     yield call
     server.shutdown()
     server.server_close()
@@ -62,3 +63,31 @@ def test_unknown_route_is_404(api):
 
 def test_answers_cors_preflight_from_dev_ui(api):
     assert api("OPTIONS", "/samples")[0] == 204
+
+
+def raw(api, method, path, headers, body=b"{}"):
+    import http.client
+    conn = http.client.HTTPConnection("127.0.0.1", api.port)
+    conn.putrequest(method, path, skip_host="Host" in headers)
+    for k, v in headers.items():
+        conn.putheader(k, v)
+    conn.putheader("Content-Length", str(len(body)))
+    conn.endheaders(body)
+    return conn.getresponse().status
+
+
+def test_rejects_cross_site_and_rebound_requests(api, db):
+    json_ct = {"Content-Type": "application/json"}
+    assert raw(api, "POST", "/sessions", {"Content-Type": "text/plain"}) == 415
+    assert raw(api, "POST", "/sessions", {**json_ct, "Origin": "https://evil.example"}) == 403
+    assert raw(api, "GET", "/counts", {"Origin": "https://evil.example"}) == 403
+    assert raw(api, "GET", "/counts", {"Host": f"evil.example:{api.port}"}) == 403
+    assert raw(api, "GET", "/counts", {"Origin": "app://cara", "Host": f"localhost:{api.port}"}) == 200
+    assert db.execute("SELECT count(*) FROM recording_session").fetchone()[0] == 0
+
+
+def test_unexpected_error_is_500(api, monkeypatch):
+    def boom(*_):
+        raise RuntimeError("boom")
+    monkeypatch.setattr(service, "ROUTES", [("GET", r"/boom", boom)])
+    assert api("GET", "/boom")[0] == 500

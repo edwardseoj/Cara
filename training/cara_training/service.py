@@ -73,6 +73,14 @@ def make_server(db_url=DEFAULT_URL, port=DEFAULT_PORT):
             self._send(204)
 
         def _dispatch(self):
+            # Block other browser pages (CORS-simple POSTs) and DNS rebinding.
+            port = self.server.server_address[1]
+            if self.headers.get("Host") not in (f"127.0.0.1:{port}", f"localhost:{port}"):
+                return self._send(403, {"error": "bad host"})
+            if self.headers.get("Origin", "app://cara") != "app://cara":
+                return self._send(403, {"error": "bad origin"})
+            if self.command == "POST" and self.headers.get_content_type() != "application/json":
+                return self._send(415, {"error": "expected application/json"})
             path = self.path.split("?", 1)[0]
             for method, pattern, handler in ROUTES:
                 match = re.fullmatch(pattern, path)
@@ -87,6 +95,8 @@ def make_server(db_url=DEFAULT_URL, port=DEFAULT_PORT):
                     self._send(*handler(conn, body, match))
             except (BadRequest, KeyError, TypeError, ValueError, psycopg.errors.IntegrityError, psycopg.errors.DataError) as e:
                 self._send(400, {"error": str(e)})
+            except Exception as e:  # noqa: BLE001  answer instead of dropping the connection
+                self._send(500, {"error": str(e)})
 
         do_GET = do_POST = do_DELETE = _dispatch
 

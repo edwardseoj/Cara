@@ -27,14 +27,14 @@ def test_jobs_go_queued_running_succeeded_with_metrics(api, monkeypatch):
     stub(monkeypatch, "import sys,time,json; time.sleep(1); print('log'); print(json.dumps({'kind': sys.argv[1], 'accuracy': 0.9}))")
     status, first = api("POST", "/jobs", {"model_kind": "static"})
     assert status == 202
-    _, second = api("POST", "/jobs", {"model_kind": "dynamic"})
+    _, second = api("POST", "/jobs", {"model_kind": "motion"})
     assert api("GET", f"/jobs/{second['id']}")[1]["status"] == "queued"  # one GPU job at a time
     seen, job = wait_for(api, first["id"])
     assert seen[-2:] == ["running", "succeeded"]
     assert job["metrics"] == {"kind": "static", "accuracy": 0.9}
     seen, job = wait_for(api, second["id"])
     assert seen[-1] == "succeeded"
-    assert job["metrics"]["kind"] == "dynamic"
+    assert job["metrics"]["kind"] == "motion"
 
 
 def test_failing_trainer_marks_job_failed(api, monkeypatch):
@@ -47,3 +47,8 @@ def test_failing_trainer_marks_job_failed(api, monkeypatch):
 def test_unknown_job_is_404_and_kind_required(api):
     assert api("GET", "/jobs/999999")[0] == 404
     assert api("POST", "/jobs", {})[0] == 400
+    assert api("POST", "/jobs", {"model_kind": "rm -rf"})[0] == 400
+
+
+def test_train_command_enables_train_profile():
+    assert jobs.command("static")[:5] == ["docker", "compose", "--profile", "train", "run"]

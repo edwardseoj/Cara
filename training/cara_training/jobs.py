@@ -13,11 +13,12 @@ _jobs = {}
 _ids = itertools.count(1)
 _queue = queue.Queue()
 _lock = threading.Lock()
+MODEL_KINDS = {"static", "motion"}
 
 
 def command(model_kind):
     # Stub trainer until the real one lands; swap the module name here.
-    return ["docker", "compose", "run", "--rm", "-T", "train", "python", "-m", "cara_training.stub_train", model_kind]
+    return ["docker", "compose", "--profile", "train", "run", "--rm", "-T", "train", "python", "-m", "cara_training.stub_train", model_kind]
 
 
 def _worker():
@@ -40,6 +41,8 @@ threading.Thread(target=_worker, daemon=True).start()
 
 def start(_conn, body, _match):
     kind = body["model_kind"]
+    if kind not in MODEL_KINDS:
+        raise ValueError(f"model_kind must be one of {sorted(MODEL_KINDS)}")
     with _lock:
         job = {"id": next(_ids), "model_kind": kind, "status": "queued", "metrics": None, "error": None}
         _jobs[job["id"]] = job
