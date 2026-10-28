@@ -10,7 +10,10 @@ const challengeOf = (verifier) => b64url(crypto.createHash('sha256').update(veri
 async function spotify(token, method, path) {
   const res = await fetch(`https://api.spotify.com/v1${path}`, { method, headers: { Authorization: `Bearer ${token}` } });
   const text = await res.text();
-  return { status: res.status, body: text ? JSON.parse(text) : null };
+  // Not every response is JSON (the spike hit a plain-text body), so keep the raw text.
+  let body = text || null;
+  try { body = text ? JSON.parse(text) : null; } catch {}
+  return { status: res.status, body };
 }
 
 function waitForCode(port, state) {
@@ -58,6 +61,7 @@ async function main() {
 
   const player = await spotify(tokens.access_token, 'GET', '/me/player');
   // 204 = no active device
+  console.log(`GET /me/player -> ${player.status}`, player.status === 200 ? '' : JSON.stringify(player.body));
   const playing = player.status === 200 && player.body.is_playing;
   const res = await spotify(tokens.access_token, 'PUT', playing ? '/me/player/pause' : '/me/player/play');
   console.log(`${playing ? 'pause' : 'play'} -> ${res.status}`, res.body ? JSON.stringify(res.body) : '');

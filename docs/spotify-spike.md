@@ -11,17 +11,18 @@ Script: `app/spike/spotify-pkce.js`. It logs in with a Client ID only, then togg
 
 ## Findings
 
-"Docs" means taken from Spotify's documentation and not yet observed in a run. Replace each with what the run showed.
+"Observed" means seen in a real run on 2026-10-28. "Docs" means taken from Spotify's documentation and not yet observed.
 
 | Question | Finding | Status |
 |---|---|---|
-| Redirect URI shape | `http://127.0.0.1:<port>/callback`. Spotify requires a loopback IP literal over HTTP; `localhost` is rejected. The port must match the registered URI exactly. | Docs |
-| Scopes needed | `user-read-playback-state` (to read `is_playing`) and `user-modify-playback-state` (play/pause). Like/unlike will later need `user-library-modify`. | Docs |
-| Token lifetime | `expires_in` is 3600 s. A refresh token is returned for PKCE and is exchanged at the same token endpoint with `grant_type=refresh_token` and no secret. | Docs; script prints `expires_in`, refresh not exercised |
+| Redirect URI shape | `http://127.0.0.1:<port>/callback`. Spotify requires a loopback IP literal over HTTP; `localhost` is rejected. The port must match the registered URI exactly. | Observed: `http://127.0.0.1:8888/callback` worked |
+| Scopes needed | `user-read-playback-state` (to read `is_playing`) and `user-modify-playback-state` (play/pause). Like/unlike will later need `user-library-modify`. | Observed: both granted, token response lists exactly these two |
+| Token lifetime | `expires_in` is 3600 s. A refresh token is returned for PKCE and is exchanged at the same token endpoint with `grant_type=refresh_token` and no secret. | Observed: `expires_in=3600`, `refresh_token` present. Refresh not exercised |
 | No active device | `PUT /me/player/play` or `/pause` returns 404 with reason `NO_ACTIVE_DEVICE`; `GET /me/player` returns 204 with no body. | Docs |
+| Pause response | Docs say 204 with no body. Observed `PUT /me/player/pause` returns **200 with a plain-text body**, so a client must not JSON-parse play/pause responses. `GET /me/player` returned 200 with an active device. | Observed |
 | Non-Premium | Playback control returns 403 with reason `PREMIUM_REQUIRED`. | Docs |
 
 ## Not done
 
 - No token storage or refresh. That belongs to #30.
-- The script was not run against Spotify, since it needs the maintainer's Client ID and a login. #17 stays open until it has been run and the table above is confirmed.
+- Still "Docs" only: the no-active-device error, the non-Premium error, and `play` (run the script again after a pause to see it). #17 stays open until these are observed.
