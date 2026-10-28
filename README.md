@@ -7,6 +7,7 @@
 <p align="center"><strong>Control Spotify with your hands.</strong></p>
 
 <p align="center">
+  <a href="https://github.com/edwardseoj/Cara/actions/workflows/ci.yml?query=branch%3Adevelop%2Fsetup"><img alt="CI" src="https://github.com/edwardseoj/Cara/actions/workflows/ci.yml/badge.svg?branch=develop/setup"></a>
   <img alt="Status: pre-alpha" src="https://img.shields.io/badge/status-pre--alpha-F26B1D">
   <img alt="Platform: Linux" src="https://img.shields.io/badge/platform-Linux-1C1F26">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue">
