@@ -44,9 +44,9 @@
   <section class="card">
     <header><h2>Training</h2></header>
     <section class="grid gap-3">
-      <div class="grid gap-2"><label class="label" for="model-kind">Model</label><select class="select w-full" id="model-kind"><option>static</option><option>motion</option></select></div>
+      <div class="grid gap-2"><label class="label" for="model-kind">Model kind</label><select class="select w-full" id="model-kind"><option value="static">static gestures</option><option value="motion">motion gestures</option></select></div>
       <button class="btn" id="train" type="button">Start training</button>
-      <output id="train-status" class="text-muted-foreground"></output>
+      <div class="grid gap-1 text-sm"><p id="train-title" class="font-medium"></p><dl id="train-metrics" class="grid grid-cols-2 gap-x-4 text-muted-foreground"></dl><p id="train-error" class="text-destructive"></p></div>
     </section>
   </section>
 </form>
