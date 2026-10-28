@@ -34,6 +34,7 @@ function tick() {
     const result = tracker.detectForVideo(video, timestamp);
     const frame = toFrame(result, timestamp);
     window.dispatchEvent(new CustomEvent('landmarks', { detail: frame }));
+    window.cara?.sendFrame(frame);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const points of result.landmarks) {
       draw.drawConnectors(points, HandLandmarker.HAND_CONNECTIONS, { color: '#0f0', lineWidth: 3 });
@@ -51,4 +52,6 @@ function tick() {
   }
   requestAnimationFrame(tick);
 }
+const gestureEl = document.getElementById('gesture');
+window.cara?.onGesture(({ gesture }) => { gestureEl.textContent = gesture; gestureEl.hidden = false; });
 tick();

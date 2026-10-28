@@ -12,6 +12,7 @@
 <div id="stage" class="relative shrink-0 w-[640px] h-[480px] bg-black">
   <video id="video" autoplay playsinline muted></video>
   <canvas id="overlay" width="640" height="480"></canvas>
+  <output id="gesture" class="absolute bottom-4 left-4 rounded-md bg-black/70 px-3 py-1 text-base font-semibold text-white" aria-live="polite" hidden></output>
   <div id="stage-overlay" class="absolute inset-0 grid place-items-center pointer-events-none" aria-hidden="true">
     <span id="stage-countdown" class="text-9xl font-bold text-white drop-shadow-lg" hidden></span>
     <span id="stage-recording" class="absolute top-4 left-4 rounded-md bg-red-600 px-3 py-1 text-base font-semibold text-white" hidden>Recording</span>
