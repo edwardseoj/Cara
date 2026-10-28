@@ -43,8 +43,42 @@ test('two hands give two labels in frame order, each at its own wrist', () => {
       { handedness: 'Left', score: 0.6, landmarks: [[0.5, 0.75, 0]] },
     ],
   };
-  assert.deepStrictEqual(handLabels(frame, 200, 100), [
-    { text: 'Left 80%', x: 150, y: 41 },
-    { text: 'Right 60%', x: 100, y: 91 },
+  assert.deepStrictEqual(handLabels(frame, 800, 400), [
+    { text: 'Left 80%', x: 600, y: 116 },
+    { text: 'Right 60%', x: 400, y: 316 },
   ]);
+});
+
+const hand = (x, y, handedness = 'Left', score = 0.5) => ({ handedness, score, landmarks: [[x, y, 0]] });
+const anchors = (hands) => handLabels({ timestamp: 1, hands }, 640, 480).map(({ x, y }) => [x, y]);
+
+test('a wrist at or past each edge keeps its label 40px inside the canvas', () => {
+  assert.deepStrictEqual(anchors([hand(-0.2, 0.5), hand(0, 0.5), hand(1, 0.5), hand(1.3, 0.5)]),
+    [[40, 256], [40, 256], [600, 256], [600, 256]]);
+  assert.deepStrictEqual(anchors([hand(0.5, -0.2), hand(0.5, 0), hand(0.5, 1), hand(0.5, 1.3)]),
+    [[320, 40], [320, 40], [320, 440], [320, 440]]);
+});
+
+test('a hand with no landmarks or no wrist gets no label; the others keep theirs', () => {
+  const hands = [
+    { handedness: 'Left', score: 0.5, landmarks: [] },
+    { handedness: 'Left', score: 0.5, landmarks: [null, [0.5, 0.5, 0]] },
+    hand(0.5, 0.5),
+  ];
+  assert.deepStrictEqual(anchors(hands), [[320, 256]]);
+});
+
+const texts = (hands) => handLabels({ timestamp: 1, hands }, 640, 480).map(({ text }) => text);
+
+test('an unknown raw handedness shows ? with its confidence', () => {
+  assert.deepStrictEqual(texts([hand(0.5, 0.5, 'Unknown', 0.42)]), ['? 42%']);
+});
+
+test('two hands with the same raw handedness both show it, not de-duplicated', () => {
+  assert.deepStrictEqual(texts([hand(0.25, 0.5, 'Right', 0.9), hand(0.75, 0.5, 'Right', 0.9)]), ['Left 90%', 'Left 90%']);
+});
+
+test('confidence rounds to the nearest whole percent at the boundaries', () => {
+  assert.deepStrictEqual(texts([0.995, 0.994, 0.005, 0.004, 1, 0].map((s) => hand(0.5, 0.5, 'Left', s))),
+    ['Right 100%', 'Right 99%', 'Right 1%', 'Right 0%', 'Right 100%', 'Right 0%']);
 });

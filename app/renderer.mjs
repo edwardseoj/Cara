@@ -11,6 +11,9 @@ ctx.font = '14px sans-serif';
 ctx.textAlign = 'center';
 ctx.textBaseline = 'top';
 ctx.fillStyle = '#fff';
+ctx.strokeStyle = '#000'; // dark outline keeps white text legible on light backgrounds
+ctx.lineWidth = 3;
+ctx.lineJoin = 'round';
 
 const fileset = await FilesetResolver.forVisionTasks('./node_modules/@mediapipe/tasks-vision/wasm');
 const tracker = await HandLandmarker.createFromOptions(fileset, {
@@ -41,6 +44,7 @@ function tick() {
       ctx.save();
       ctx.translate(x, y);
       ctx.scale(-1, 1);
+      ctx.strokeText(text, 0, 0);
       ctx.fillText(text, 0, 0);
       ctx.restore();
     }
