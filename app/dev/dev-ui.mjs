@@ -1,13 +1,12 @@
-// Dev UI form: start a recording session, then save the latest landmark frame as a one-frame sample.
-import { GESTURE_LABELS, sampleBody, post } from './record.mjs';
+// Dev UI form: start a recording session, then after a countdown, save the next N landmark frames as one sample.
+import { GESTURE_LABELS, WINDOW_FRAMES, sampleBody, captureFrames, post } from './record.mjs';
 
 const form = document.getElementById('dev');
 const status = document.getElementById('status');
 const record = document.getElementById('record');
 form.label.append(...GESTURE_LABELS.map((l) => new Option(l)));
 
-let latest = null;
-window.addEventListener('landmarks', (e) => { latest = e.detail; });
+form.frames.value = WINDOW_FRAMES;
 
 let session = null;
 const say = (msg) => { status.textContent = msg; };
@@ -24,10 +23,18 @@ document.getElementById('start').onclick = async () => {
 };
 
 record.onclick = async () => {
-  if (!latest) return say('no frame yet');
+  const n = Math.max(1, Number(form.frames.value) || WINDOW_FRAMES);
+  const label = form.label.value;
+  record.disabled = true;
   try {
-    const body = sampleBody({ sessionId: session.id, sessionStart: session.start, label: form.label.value, frame: latest });
-    const { id } = await post('/samples', body);
-    say(`saved sample ${id} (${body.gesture_label}, ${latest.hands.length} hand(s))`);
+    for (let s = Number(form.countdown.value) || 0; s > 0; s--) {
+      say(`get ready: ${s}`);
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+    say(`recording ${n} frames...`);
+    const frames = await captureFrames(window, n);
+    const { id } = await post('/samples', sampleBody({ sessionId: session.id, sessionStart: session.start, label, frames }));
+    say(`saved sample ${id} (${label}, ${n} frames, ${Math.round(frames.at(-1).timestamp - frames[0].timestamp)} ms)`);
   } catch (e) { say(`error: ${e.message}`); }
+  record.disabled = false;
 };
