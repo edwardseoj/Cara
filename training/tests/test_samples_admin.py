@@ -3,8 +3,10 @@ from test_service import HANDS, SESSION, api  # noqa: F401  (api is a fixture)
 
 
 def record(api, session_id, label):
-    return api("POST", "/samples", {"recording_session_id": session_id, "gesture_label": label,
-                                    "frames": [{"ts_ms": 0, "hands": HANDS}]})[1]["id"]
+    status, body = api("POST", "/samples", {"recording_session_id": session_id, "gesture_label": label,
+                                            "frames": [{"ts_ms": 0, "hands": HANDS}]})
+    assert status == 201, body
+    return body["id"]
 
 
 def test_counts_by_gesture_and_recording_session(api):

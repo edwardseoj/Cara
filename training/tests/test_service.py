@@ -91,3 +91,14 @@ def test_unexpected_error_is_500(api, monkeypatch):
         raise RuntimeError("boom")
     monkeypatch.setattr(service, "ROUTES", [("GET", r"/boom", boom)])
     assert api("GET", "/boom")[0] == 500
+
+
+def test_replies_only_after_commit(api, monkeypatch):
+    # A 2xx must mean the write is committed, or the client's next request can miss it (#82).
+    def fails_at_commit(conn, *_):
+        conn.execute("CREATE TEMP TABLE p (id int PRIMARY KEY)")
+        conn.execute("CREATE TEMP TABLE c (p_id int REFERENCES p DEFERRABLE INITIALLY DEFERRED)")
+        conn.execute("INSERT INTO c VALUES (1)")
+        return 201, {"id": 1}
+    monkeypatch.setattr(service, "ROUTES", [("POST", r"/commit", fails_at_commit)])
+    assert api("POST", "/commit", {})[0] == 400
