@@ -1,7 +1,7 @@
 // Spike #26: time the toy classifier inside Electron's main process. Run from app/: npx electron spike/bench-classifier.js
 const path = require("node:path");
 const { app } = require("electron");
-const { loadClassifier } = require("./classifier");
+const { loadClassifier } = require("../classifier");
 
 app.whenReady().then(async () => {
   const t0 = performance.now();

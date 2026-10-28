@@ -27,6 +27,7 @@ await video.play();
 
 // Later consumers (recording, inference) listen for 'landmarks' events: event.detail is a frame.
 let lastTime = -1;
+const gestureEl = document.getElementById('gesture');
 function tick() {
   if (video.currentTime !== lastTime) {
     lastTime = video.currentTime;
@@ -35,6 +36,7 @@ function tick() {
     const frame = toFrame(result, timestamp);
     window.dispatchEvent(new CustomEvent('landmarks', { detail: frame }));
     window.cara?.sendFrame(frame);
+    if (!frame.hands.length) gestureEl.hidden = true; // idle: clear the last recognized gesture
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const points of result.landmarks) {
       draw.drawConnectors(points, HandLandmarker.HAND_CONNECTIONS, { color: '#0f0', lineWidth: 3 });
@@ -52,6 +54,5 @@ function tick() {
   }
   requestAnimationFrame(tick);
 }
-const gestureEl = document.getElementById('gesture');
 window.cara?.onGesture(({ gesture }) => { gestureEl.textContent = gesture; gestureEl.hidden = false; });
 tick();

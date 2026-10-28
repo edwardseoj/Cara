@@ -22,7 +22,7 @@ async function loadRecognizer(dir, gateOptions) {
     throw new Error(`model normalization spec version ${meta.normalization_spec_version}, app implements ${SPEC_VERSION}`);
   }
   if (!meta.labels.includes("idle")) throw new Error("model labels lack the idle class");
-  const { loadClassifier } = require("./spike/classifier");
+  const { loadClassifier } = require("./classifier");
   const classify = await loadClassifier(path.join(dir, "model.json"));
   return createRecognizer({ classify, labels: meta.labels, ...gateOptions });
 }

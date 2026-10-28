@@ -40,20 +40,23 @@ def split(rows, seed=0):
 
 
 def train(rows, out_dir, epochs=50):
+    labels = sorted({r[1] for r in rows})
+    if "idle" not in labels:
+        raise ValueError("dataset has no idle samples; idle is a trained class")
     import numpy as np
     import tensorflow as tf
     import tensorflowjs as tfjs
 
     tf.random.set_seed(0)  # not keras set_random_seed: tf-keras 2.16 breaks with it on Python 3.12
-    labels = sorted({r[1] for r in rows})
+    width = len(rows[0][2])
 
     def xy(part):
-        return (np.array([r[2] for r in part], dtype="float32").reshape(-1, 128),
+        return (np.array([r[2] for r in part], dtype="float32").reshape(-1, width),
                 np.array([labels.index(r[1]) for r in part]))
 
     (x_tr, y_tr), (x_va, y_va), (x_te, y_te) = map(xy, split(rows))
     model = tf.keras.Sequential([
-        tf.keras.Input(shape=(128,)),
+        tf.keras.Input(shape=(width,)),
         tf.keras.layers.Dense(64, activation="relu"),
         tf.keras.layers.Dense(len(labels), activation="softmax"),
     ])
@@ -61,9 +64,9 @@ def train(rows, out_dir, epochs=50):
     model.fit(x_tr, y_tr, validation_data=(x_va, y_va), epochs=epochs, verbose=0)
     out = pathlib.Path(out_dir)
     tfjs.converters.save_keras_model(model, str(out))
-    (out / "metadata.json").write_text(json.dumps({"model_kind": "static", "labels": labels,
-                                                   "normalization_spec_version": SPEC_VERSION}, indent=2))
-    return {"model_kind": "static", "labels": labels, "frames": {"train": len(x_tr), "val": len(x_va), "test": len(x_te)},
+    meta = {"model_kind": "static", "labels": labels, "normalization_spec_version": SPEC_VERSION}
+    (out / "metadata.json").write_text(json.dumps(meta, indent=2))
+    return {**meta, "frames": {"train": len(x_tr), "val": len(x_va), "test": len(x_te)},
             "val_accuracy": float(model.evaluate(x_va, y_va, verbose=0)[1]),
             "test_accuracy": float(model.evaluate(x_te, y_te, verbose=0)[1]), "out_dir": str(out)}
 

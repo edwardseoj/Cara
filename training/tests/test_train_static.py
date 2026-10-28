@@ -53,3 +53,9 @@ def test_train_exports_tfjs_layers_model_with_metadata(db, tmp_path):
     model = json.loads((tmp_path / "model.json").read_text())
     assert model["format"] == "layers-model"
     assert 0.0 <= metrics["test_accuracy"] <= 1.0
+
+
+def test_train_refuses_dataset_without_idle(tmp_path):
+    rows = [(s, "palm", [0.0] * 128) for s in range(3)]
+    with pytest.raises(ValueError, match="idle"):
+        train_static.train(rows, tmp_path, epochs=1)

@@ -30,6 +30,14 @@ _Avoid_: Side, chirality
 The state in which no gesture is being made; Cara treats it as a recognized class of its own.
 _Avoid_: None, null, background, no-gesture
 
+**Gate**:
+The false-trigger filter between the classifier and any action: a gesture fires only when it is the top class at or above the confidence threshold for N consecutive frames, fires once per hold, and re-arms only after a confident idle frame.
+_Avoid_: Debounce, filter
+
+**Recognizer**:
+The pipeline that turns a landmark frame into a gesture event: normalization, classifier, then the gate.
+_Avoid_: Detector
+
 ### Spotify
 
 **Action**:
